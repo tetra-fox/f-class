@@ -2,21 +2,51 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
+
     <title>tetra</title>
   </head>
   <body>
     <div id="container">
       <div id="profile"></div>
       <span id="con">tetra @ FWA</span>
-      <a class="link" href="https://twitter.com/etra_t">twitter</a>
-      <a class="link" href="https://t.me/realign">telegram</a>
-      <a class="link" href="https://soundcloud.com/tetramsic">soundcloud</a>
-      <a class="link" href="https://www.mixcloud.com/tetrafox/">mixcloud</a>
+      <a class="link" href="https://twitter.com/etra_t"><span>twitter</span></a>
+      <a class="link" href="https://t.me/realign"><span>telegram</span></a>
+      <a class="link" href="https://soundcloud.com/tetramsic"
+        ><span>soundcloud</span></a
+      >
+      <a class="link" href="https://www.mixcloud.com/tetrafox/"
+        ><span>mixcloud</span></a
+      >
       <a
         class="link"
         href="https://open.spotify.com/artist/3BCEPJ0GHgaZzCD5cSTEjv?si=dJ1j7bvHQUuhwQbj9nd61Q"
         >spotify</a
       >
     </div>
+    <script src="vanilla-tilt.min.js"></script>
+    <script type="text/javascript">
+      if (typeof DeviceMotionEvent.requestPermission === "function") {
+        DeviceMotionEvent.requestPermission()
+          .then((response) => {
+            if (response == "granted") {
+              window.addEventListener("devicemotion", (e) => {
+                // do something with e
+              });
+            }
+          })
+          .catch(console.error);
+      }
+
+      VanillaTilt.init(document.querySelectorAll(".link"), {
+        max: 25,
+        reverse: true,
+        max: 15,
+        scale: 1.1,
+        speed: 500,
+        transition: false,
+        glare: true,
+        "max-glare": 0.5,
+      });
+    </script>
   </body>
 </html>

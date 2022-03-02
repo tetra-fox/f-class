@@ -5,7 +5,9 @@ import * as MiniCssExtractPlugin from "mini-css-extract-plugin";
 import * as CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 import * as HtmlMinimizerPlugin from "html-minimizer-webpack-plugin";
 import * as TerserPlugin from "terser-webpack-plugin";
-const SveltePreprocess = require('svelte-preprocess'); // I have no idea why I need to use CJS syntax, import doesn't work
+const SveltePreprocess = require("svelte-preprocess"); // I have no idea why I need to use CJS syntax. import doesn't work
+import ImportAssets from "svelte-preprocess-import-assets";
+import Sequence from "./tools/sequence";
 import "webpack-dev-server";
 
 const config: webpack.Configuration = {
@@ -21,12 +23,15 @@ const config: webpack.Configuration = {
                     loader: "svelte-loader",
                     options: {
                         emitCss: true,
-                        preprocess: SveltePreprocess({
-                            scss: true,
-                            sass: true,
-                            postcss: true
-                        })
-                    }
+                        preprocess: Sequence([
+                            SveltePreprocess({
+                                scss: true,
+                                sass: true,
+                                postcss: true
+                            }),
+                            ImportAssets()
+                        ])
+                    },
                 }
             },
             {
@@ -71,7 +76,11 @@ const config: webpack.Configuration = {
     ],
     optimization: {
         minimize: true,
-        minimizer: [new CssMinimizerPlugin(), new HtmlMinimizerPlugin(), new TerserPlugin()]
+        minimizer: [
+            new CssMinimizerPlugin(),
+            new HtmlMinimizerPlugin(),
+            new TerserPlugin()
+        ]
     },
     resolve: {
         alias: {

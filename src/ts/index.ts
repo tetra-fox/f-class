@@ -1,6 +1,5 @@
-import "../scss/style.scss";
-import "./tilt.ts";
-import App from "../svelte/App.svelte";
+import Tilt from "./tilt";
+import App from "/src/svelte/App.svelte";
 
 const info: Info = {
     name: "tetra",
@@ -36,6 +35,11 @@ const app = new App({
         info,
         links
     }
+});
+
+// initialize tilt component
+window.addEventListener("load", function () {
+    Tilt.init(".link");
 });
 
 export default app;

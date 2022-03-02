@@ -1,19 +1,29 @@
-import * as path from "path";
-import * as webpack from "webpack";
-import * as HtmlWebpackPlugin from "html-webpack-plugin";
-import * as MiniCssExtractPlugin from "mini-css-extract-plugin";
-import * as CssMinimizerPlugin from "css-minimizer-webpack-plugin";
-import * as HtmlMinimizerPlugin from "html-minimizer-webpack-plugin";
-import * as TerserPlugin from "terser-webpack-plugin";
-const SveltePreprocess = require("svelte-preprocess"); // I have no idea why I need to use CJS syntax. import doesn't work
+// Webpack
+import path from "path";
+import webpack from "webpack";
+import "webpack-dev-server";
+
+// Plugins
+import SvelteCheckPlugin from "svelte-check-plugin";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import HtmlMinimizerPlugin from "html-minimizer-webpack-plugin";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
+import Autoprefixer from "autoprefixer";
+import TerserPlugin from "terser-webpack-plugin";
+
+// Svelte preprocessors
+import SveltePreprocess from "svelte-preprocess";
 import ImportAssets from "svelte-preprocess-import-assets";
 import Sequence from "./tools/sequence";
-import "webpack-dev-server";
 
 const config: webpack.Configuration = {
     mode: "production",
     entry: {
-        index: "./src/ts/index.ts"
+        index: [
+            "./src/scss/style.scss",
+            "./src/ts/index.ts"
+        ]
     },
     module: {
         rules: [
@@ -27,15 +37,17 @@ const config: webpack.Configuration = {
                             SveltePreprocess({
                                 scss: true,
                                 sass: true,
-                                postcss: true
+                                postcss: {
+                                    plugins: [Autoprefixer]
+                                }
                             }),
                             ImportAssets()
                         ])
-                    },
+                    }
                 }
             },
             {
-                test: /node_modules\/svelte\/.*\.mjs$/,
+                test: /node_modules\/svelte\/.*\.mjs$/i,
                 resolve: {
                     fullySpecified: false
                 }
@@ -47,7 +59,19 @@ const config: webpack.Configuration = {
             },
             {
                 test: /\.s[ac]ss$/i,
-                use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"]
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    "css-loader",
+                    {
+                        loader: "postcss-loader",
+                        options: {
+                            postcssOptions: {
+                                plugins: [Autoprefixer]
+                            }
+                        }
+                    },
+                    "sass-loader"
+                ]
             },
             {
                 test: /\.(png|svg|jpe?g|gif|webp)$/i,
@@ -70,9 +94,9 @@ const config: webpack.Configuration = {
             title: ""
         }),
         new MiniCssExtractPlugin({
-            filename: "./css/[name].css",
-            chunkFilename: "[hash].css"
-        })
+            filename: "./css/index.[contenthash].css"
+        }),
+        new SvelteCheckPlugin()
     ],
     optimization: {
         minimize: true,
@@ -80,20 +104,31 @@ const config: webpack.Configuration = {
             new CssMinimizerPlugin(),
             new HtmlMinimizerPlugin(),
             new TerserPlugin()
-        ]
+        ],
+        moduleIds: "deterministic",
+        runtimeChunk: "single",
+        splitChunks: {
+            cacheGroups: {
+                vendor: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: "vendor",
+                    chunks: "all"
+                }
+            }
+        }
     },
     resolve: {
         alias: {
             svelte: path.resolve("node_modules", "svelte")
         },
-        extensions: [".tsx", ".ts", ".js", ".mjs", ".js", ".svelte"],
+        extensions: [".tsx", ".ts", ".js", ".mjs", ".svelte"],
         mainFields: ["svelte", "browser", "module", "main"]
     },
     performance: {
         hints: false
     },
     output: {
-        filename: "./js/[name].bundle.js",
+        filename: "./js/[name].[contenthash].js",
         path: path.resolve(__dirname, "dist"),
         clean: true
     }

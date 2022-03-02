@@ -1,8 +1,8 @@
 import "../scss/style.scss";
 import "./tilt.ts";
-import Index from "../svelte/index.svelte";
+import App from "../svelte/App.svelte";
 
-const info = {
+const info: Info = {
     name: "tetra",
     con: "FWA"
 };
@@ -30,7 +30,7 @@ const links: Link[] = [
     }
 ];
 
-const index = new Index({
+const app = new App({
     target: document.body,
     props: {
         info,
@@ -38,4 +38,4 @@ const index = new Index({
     }
 });
 
-export default index;
+export default app;

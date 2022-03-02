@@ -4,6 +4,7 @@ import * as HtmlWebpackPlugin from "html-webpack-plugin";
 import * as MiniCssExtractPlugin from "mini-css-extract-plugin";
 import * as CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 import * as HtmlMinimizerPlugin from "html-minimizer-webpack-plugin";
+import * as TerserPlugin from "terser-webpack-plugin";
 import "webpack-dev-server";
 
 const config: webpack.Configuration = {
@@ -56,7 +57,8 @@ const config: webpack.Configuration = {
         })
     ],
     optimization: {
-        minimizer: [new CssMinimizerPlugin(), new HtmlMinimizerPlugin()]
+        minimize: true,
+        minimizer: [new CssMinimizerPlugin(), new HtmlMinimizerPlugin(), new TerserPlugin()]
     },
     resolve: {
         alias: {
